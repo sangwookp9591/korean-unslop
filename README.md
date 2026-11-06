@@ -8,7 +8,7 @@
 korean-unslop은 한국 독자가 실제로 AI 티라고 지적한 표지를 세고, 글의 자리와 읽을 사람에 맞게 고쳐 씁니다.
 
 [![Claude Code Plugin](https://img.shields.io/badge/Claude_Code-plugin-D97757)](#설치)
-[![Version](https://img.shields.io/badge/version-0.4.0-blue)](.claude-plugin/plugin.json)
+[![Version](https://img.shields.io/badge/version-0.5.0-blue)](.claude-plugin/plugin.json)
 [![Python](https://img.shields.io/badge/scripts-python3_stdlib_only-3776AB)](skills/korean-unslop/scripts)
 [![Formats](https://img.shields.io/badge/지원-텍스트·PPTX·PDF-555)](#사용법)
 
@@ -100,6 +100,36 @@ deck.pptx 투자 미팅 자료인데 슬라이드 문구가 너무 AI 같아요.
 | PDF | 페이지별로 "원문 → 고친 글". PDF 파일 자체는 고치지 않음 |
 
 Claude가 한국어 블로그 글, 보고서, 메일, README를 새로 쓸 때도 이 스킬의 작성 지침을 따릅니다.
+
+## 진행 표시 (Claude Code)
+
+플러그인으로 설치하면 mod가 함께 켜져서, 고쳐 쓰는 동안 무엇이 진행 중인지 채팅 옆 패널과 상태줄에 보여 줍니다. 패널은 `/unslop-progress`로 다시 열 수 있습니다.
+
+```
+원격 근무 보고
+팀장 보고 · 중 규모 · 3100자
+
+✓ 1. 대상 확인
+✓ 2. 세기
+✓ 3. 규모 판단
+▶ 4. 층위별 조사  — 조사관 2명 보냄
+· 5. 모아서 고치기
+· 6. 다시 세기
+· 7. 최종 검증
+
+스크립트 검출 21건
+화행 4 · 구조 2 · 문장 12 · 낱말 3
+
+조사관 1/2 · 발견 9건
+✓ 화행+구조 · 전체 · 발견 9건
+▶ 문장+낱말 · 전체 · 조사 중
+```
+
+상태줄: `unslop · 4/7 층위별 조사 · 중 규모 · 조사관 1/2 · 발견 9건`
+
+- **단계**는 스킬이 단계마다 부르는 `progress` 도구로 갱신됩니다.
+- **조사관과 검증관**은 자동으로 추적됩니다. 맡은 층위와 범위는 에이전트 이름(`unslop 조사관 문장 1-120줄`)에서, 발견 건수는 보고의 발견 목록 행에서, 검증관의 판정과 지적 건수는 검증 보고에서 읽습니다.
+- 스킬과 관계없는 에이전트는 표시하지 않습니다.
 
 ## 어떻게 동작하나
 
@@ -239,8 +269,11 @@ python3 $S/office_text.py apply deck.pptx edits.json deck.unslop.pptx   # edits.
 ```
 korean-unslop/
 ├── .claude-plugin/
-│   ├── plugin.json          # 플러그인 매니페스트
+│   ├── plugin.json          # 플러그인 매니페스트 (스킬 + mod)
 │   └── marketplace.json     # 이 저장소 자체가 마켓플레이스
+├── hooks/register.tsx       # 진행 표시 mod: 패널, 상태줄, progress 도구
+├── types/index.d.ts         # mod 상태 타입
+├── tests/progress.test.tsx  # mod 테스트 (claude plugin test .)
 ├── docs/
 │   └── evidence-review.md   # 근거 검토: 조사 범위, 연구, 넣지 않은 방식
 ├── skills/korean-unslop/

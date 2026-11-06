@@ -12,7 +12,7 @@
       "name": "korean-unslop",
       "source": "./",
       "description": "한국어 글에서 AI 문체의 불쾌한 골짜기를 걷어내는 스킬. 보고서·메일·메신저·블로그·기술 문서·자소서·PPT·PDF 지원.",
-      "version": "0.4.0",
+      "version": "0.5.0",
       "category": "productivity"
     }
   ]

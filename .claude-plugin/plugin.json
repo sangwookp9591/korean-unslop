@@ -1,7 +1,7 @@
 {
   "name": "korean-unslop",
-  "version": "0.4.0",
-  "description": "한국어 글에서 AI 문체의 불쾌한 골짜기를 걷어낸다. 한국 독자가 실제로 지적한 AI 표지를 세고 줄이며, 보고서·메일·메신저·블로그·기술 문서·자소서·PPT·PDF를 장르와 독자에 맞게 고쳐 쓴다.",
+  "version": "0.5.0",
+  "description": "한국어 글에서 AI 문체의 불쾌한 골짜기를 걷어낸다. 한국 독자가 실제로 지적한 AI 표지를 세고 줄이며, 보고서·메일·메신저·블로그·기술 문서·자소서·PPT·PDF를 장르와 독자에 맞게 고쳐 쓴다. Claude Code에서는 진행 단계, 검출 건수, 조사관별 담당과 발견 건수를 패널과 상태줄에 표시한다.",
   "author": {
     "name": "sangwookp9591",
     "email": "sangwookp9591@gmail.com"
@@ -15,5 +15,6 @@
     "humanize",
     "translationese",
     "pptx"
-  ]
+  ],
+  "types": "./types/index.d.ts"
 }

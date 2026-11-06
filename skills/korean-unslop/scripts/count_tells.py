@@ -206,6 +206,7 @@ def to_dict(rep: Report) -> dict:
     return {
         "chars": rep.chars,
         "plan": plan(rep),
+        "layer_counts": {L: sum(len(rep.hits[p]) for p in rep.hits if p[0] == L) for L in "ABCD"},
         "sentences": rep.sentences,
         "sentence_length_mean": round(rep.sent_len_mean, 1),
         "sentence_length_cv": round(rep.sent_len_cv, 2),
