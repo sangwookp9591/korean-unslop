@@ -58,10 +58,11 @@ test('단계, 검출 건수, 조사관 담당과 발견 건수를 패널에 보�
 
   for (const surface of ['terminal', 'desktop'] as const) {
     const ui = await $.ui.mount({ ...PANE, surface })
-    expect((await ui.find({ type: 'Text', text: /스크립트 검출/ }))?.text).toBe('스크립트 검출 21건')
-    expect((await ui.find({ type: 'Text', text: /조사관 1\/1/ }))?.text).toBe('조사관 1/1 · 발견 3건')
-    expect((await ui.find({ type: 'Text', text: /1-120줄/ }))?.text).toBe('✓ 문장 · 1-120줄 · 발견 3건')
-    expect((await ui.find({ type: 'Text', text: /층위별 조사/ }))?.text).toContain('▶ 4. 층위별 조사')
+    expect((await ui.find({ type: 'Text', text: /스크립트 검출/ }))?.text).toContain('21')
+    expect((await ui.find({ type: 'Text', text: /조사관 1\/1/ }))?.text).toContain('발견 3건')
+    expect((await ui.find({ type: 'Text', text: /1-120줄/ }))?.text).toBe('문장 · 1-120줄')
+    expect((await ui.find({ type: 'Text', text: /^\s*발견 3건/ }))?.text?.trim()).toBe('발견 3건')
+    expect((await ui.find({ type: 'Text', text: /층위별 조사/ }))?.text).toContain('● 층위별 조사')
     await ui.unmount()
   }
 })
@@ -85,15 +86,16 @@ test('백그라운드 조사관과 검증관은 turn.complete에서 끝난다', 
   await $.tool.call({ tool: 'Agent', description: '관계없는 작업', prompt: '...' })
 
   const ui = await $.ui.mount({ ...PANE, surface: 'terminal' })
-  expect((await ui.find({ type: 'Text', text: /화행 · 전체/ }))?.text).toBe('▶ 화행 · 전체 · 조사 중')
+  expect((await ui.find({ type: 'Text', text: /화행 · 전체/ }))?.text).toBe('화행 · 전체')
+  expect((await ui.find({ type: 'Text', text: /조사 중/ }))?.text?.trim()).toBe('조사 중')
 
   await $.turn.complete({ agentId: 'b1', answer: REPORT, reason: 'answer', isAborted: false, durationMs: 1, turnId: 't1' })
-  expect((await ui.find({ type: 'Text', text: /화행 · 전체/ }))?.text).toBe('✓ 화행 · 전체 · 발견 3건')
+  expect((await ui.find({ type: 'Text', text: /^\s*발견 3건/ }))?.text?.trim()).toBe('발견 3건')
 
   await $.tool.call({ tool: TOOL, step: 7 })
   await $.tool.call({ tool: 'Agent', description: 'unslop 검증관', prompt: '...' })
   await $.turn.complete({ agentId: 'v1', answer: VERDICT, reason: 'answer', isAborted: false, durationMs: 1, turnId: 't2' })
-  expect((await ui.find({ type: 'Text', text: /지적/ }))?.text).toBe('✓ 수정 필요 · 지적 1건')
+  expect((await ui.find({ type: 'Text', text: /지적/ }))?.text?.trim()).toBe('수정 필요 · 지적 1건')
   expect(await ui.find({ type: 'Text', text: /관계없는/ })).toBeUndefined()
   await ui.unmount()
 })
@@ -127,9 +129,53 @@ test('Doc Coach 모드는 자기 단계와 흐름 지도 조각, 문제·제안�
   await $.tool.call({ tool: TOOL, mode: 'coach', step: 4, issues: 5, proposals: 2, requests: 1 })
 
   const ui = await $.ui.mount({ ...PANE, surface: 'terminal' })
-  expect((await ui.find({ type: 'Text', text: /4\. 제안/ }))?.text).toContain('▶ 4. 제안')
-  expect((await ui.find({ type: 'Text', text: /1-15장/ }))?.text).toBe('✓ 1-15장 · 지도 3장')
-  expect((await ui.find({ type: 'Text', text: /문제 5건/ }))?.text).toBe('문제 5건 · 제안 2개 · 자료 요청 1건')
+  expect((await ui.find({ type: 'Text', text: /● 제안/ }))?.text).toContain('● 제안')
+  expect((await ui.find({ type: 'Text', text: /^1-15장$/ }))?.text).toBe('1-15장')
+  expect((await ui.find({ type: 'Text', text: /지도 3장/ }))?.text?.trim()).toBe('지도 3장')
+  expect((await ui.find({ type: 'Text', text: /문제$/ }))?.text).toBe('5 문제')
   expect(await ui.find({ type: 'Text', text: /층위별 조사/ })).toBeUndefined()
   await ui.unmount()
+})
+
+test('프롬프트 위 띠: 제목, 막대, 단계, 퍼센트, 패널 버튼, 닫기', async ($, on) => {
+  engine(on)
+  on('ui.render', ($, e) => {
+    const { Box } = $.ui.resolve(e)
+    return <Box />
+  })
+  on('tool.call', () => ({ result: {} }))
+  await $.session.start({ cwd: '/', surface: 'terminal', isInteractive: true })
+  await $.tool.call({ tool: TOOL, step: 1, title: '보고서' })
+  await $.tool.call({ tool: TOOL, step: 4 })
+
+  const band = { plugin: 'korean-unslop', component: 'AbovePrompt', props: { bodyColumns: 120, hasSurvey: false, isWorking: false } } as const
+  const ui = await $.ui.mount({ ...band, surface: 'terminal' } as never)
+  expect((await ui.find({ type: 'Text', text: /4\/7 층위별 조사/ }))?.text).toBe('4/7 층위별 조사')
+  expect((await ui.find({ type: 'Text', text: /%$/ }))?.text).toBe('43%')
+  expect((await ui.find({ type: 'Text', text: /█/ }))?.text).toMatch(/^█+░+$/)
+  await ui.press({ key: 'unslop-dismiss' })
+  expect(await ui.find({ type: 'Text', text: /층위별 조사/ })).toBeUndefined()
+  await ui.unmount()
+})
+
+test('데스크톱: 띠와 패널 머리를 SVG로 그린다', async ($, on) => {
+  engine(on)
+  on('ui.render', ($, e) => {
+    const { Box } = $.ui.resolve(e)
+    return <Box />
+  })
+  on('tool.call', () => ({ result: {} }))
+  await $.session.start({ cwd: '/', surface: 'desktop', isInteractive: true })
+  await $.tool.call({ tool: TOOL, step: 1, title: '원격 근무 보고', audience: '팀장 보고' })
+  await $.tool.call({ tool: TOOL, step: 3, tier: '중', chars: 3100 })
+
+  const band = { plugin: 'korean-unslop', component: 'AbovePrompt', props: { bodyColumns: 120, hasSurvey: false, isWorking: false } } as const
+  const b = await $.ui.mount({ ...band, surface: 'desktop' } as never)
+  expect((await b.find({ type: 'Svg' }))?.props?.alt).toBe('원격 근무 보고: 3/7 규모 판단, 29%')
+  await b.unmount()
+
+  const p = await $.ui.mount({ ...PANE, surface: 'desktop' })
+  expect((await p.find({ type: 'Svg' }))?.props?.alt).toContain('3/7 규모 판단')
+  expect((await p.find({ type: 'Text', text: /3,100자/ }))?.text).toBe('팀장 보고 · 중 규모 · 3,100자')
+  await p.unmount()
 })

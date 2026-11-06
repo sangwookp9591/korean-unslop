@@ -42,10 +42,19 @@ export type Run = {
   requests?: number
   workers: Worker[]
   isDone: boolean
+  /** 프롬프트 위 띠를 ✕로 닫음. 새 작업이 시작되면 다시 보인다 */
+  isBandHidden?: boolean
+}
+
+export type Panel = {
+  /** 패널을 한 줄 요약으로 접음 */
+  isCompact: boolean
+  /** 끝난 조사관 목록을 접음 */
+  isDoneCollapsed: boolean
 }
 
 declare module 'claude-code' {
   interface PluginState {
-    'korean-unslop': { run: Shaped<Run | null> }
+    'korean-unslop': { run: Shaped<Run | null>; panel: Shaped<Panel> }
   }
 }

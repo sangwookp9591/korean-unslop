@@ -1,6 +1,6 @@
 {
   "name": "korean-unslop",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "한국어 글에서 AI 문체의 불쾌한 골짜기를 걷어내고(korean-unslop), PPT·PDF·긴 보고서의 흐름과 구성을 검수해 제안한다(doc-coach). Claude Code에서는 진행 단계, 검출 건수, 조사관별 담당과 발견 건수를 패널과 상태줄에 표시한다.",
   "author": {
     "name": "sangwookp9591",
