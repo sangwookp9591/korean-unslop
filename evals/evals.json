@@ -1,0 +1,48 @@
+{
+  "skill_name": "korean-unslop",
+  "evals": [
+    {
+      "id": 1,
+      "name": "report-rewrite",
+      "prompt": "팀장님한테 올릴 원격 근무 검토 보고인데 GPT로 뽑았더니 너무 AI 티가 나. evals/files/remote-work-report.md 좀 사람이 쓴 것처럼 고쳐줘. 결론은 주 2회 시범 도입하자는 쪽이야.",
+      "expected_output": "결론(주 2회 시범 도입)이 앞에 오는 짧은 보고. '알아보겠습니다', '단순히 ~를 넘어', '다만 단정하기 어렵습니다', '시사하는 바가 큽니다', 후속 제안, 이모지가 빠짐. 원문에 없는 수치를 지어내지 않음. 고친 글 + 짧은 변경 요약.",
+      "files": [
+        "evals/files/remote-work-report.md"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "cover-letter-empty-content",
+      "prompt": "자소서 지원동기 문항인데 챗지피티로 쓴 거 티 날까봐 걱정돼요. evals/files/cover-letter.md 자연스럽게 다듬어 주세요.",
+      "expected_output": "명사화·번역투·'단순히 ~를 넘어'·'성장하는 인재' 마무리를 걷어냄. 원문에 성과 수치와 본인 역할이 없으므로 숫자나 경험을 지어내지 않고, 무엇을 채워야 하는지 구체적으로 묻거나 표시함.",
+      "files": [
+        "evals/files/cover-letter.md"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "pr-description-tech",
+      "prompt": "evals/files/pr-description.md 이거 PR 설명인데 AI가 쓴 거 너무 티나서 팀원들 보기 민망함. 개발자들끼리 보는 거니까 그 톤으로 고쳐줘",
+      "expected_output": "이모지 소제목·볼드·'단순한 버그 수정을 넘어'·'결론적으로'·'~를 통해' 제거. 멱등성 키, 지수 백오프, PR 같은 실무 용어는 유지. 재시도 3회 같은 사실은 보존. 짧고 구체적인 PR 설명.",
+      "files": [
+        "evals/files/pr-description.md"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "slack-write-from-scratch",
+      "prompt": "슬랙에 팀 채널 공지 하나 써줘. 내용: 다음 주 화요일(11/10) 오후 2시에 결제 모듈 배포함, 배포 중 20분 정도 결제 API 응답 느려질 수 있음, 문제 생기면 #payment-oncall 채널로 연락. 너무 딱딱하지 않게.",
+      "expected_output": "짧은 메신저 공지. 소제목·볼드·이모지 불릿 없음(또는 최소). '알려드리고자 합니다', '원활한', '양해 부탁드립니다' 반복 같은 상투구 없음. 날짜, 시간, 영향, 연락처가 빠짐없이 들어감. 밈이나 억지 구어 없음.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "pptx-deck",
+      "prompt": "evals/files/pitch-deck.pptx 투자 미팅용 발표 자료인데 문구가 너무 AI 같아요. 슬라이드 문구 좀 다듬어서 파일로 주세요. 발표자 노트도요.",
+      "expected_output": "읽을 대상(투자자)은 요청에 있으므로 묻지 않음. office_text.py로 추출·적용해 새 .pptx 생성, 원본 보존. 개조식 유지, 이모지·'~를 통한 ~ 극대화'·줄글·'결론적으로 시사하는 바' 제거. 숫자 지어내지 않음. 슬라이드별 원문→고친 글 요약.",
+      "files": [
+        "evals/files/pitch-deck.pptx"
+      ]
+    }
+  ]
+}
