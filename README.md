@@ -8,7 +8,7 @@
 korean-unslop은 한국 독자가 실제로 AI 티라고 지적한 표지를 세고, 글의 자리와 읽을 사람에 맞게 고쳐 씁니다.
 
 [![Claude Code Plugin](https://img.shields.io/badge/Claude_Code-plugin-D97757)](#설치)
-[![Version](https://img.shields.io/badge/version-0.5.0-blue)](.claude-plugin/plugin.json)
+[![Version](https://img.shields.io/badge/version-0.6.0-blue)](.claude-plugin/plugin.json)
 [![Python](https://img.shields.io/badge/scripts-python3_stdlib_only-3776AB)](skills/korean-unslop/scripts)
 [![Formats](https://img.shields.io/badge/지원-텍스트·PPTX·PDF-555)](#사용법)
 
@@ -101,6 +101,23 @@ deck.pptx 투자 미팅 자료인데 슬라이드 문구가 너무 AI 같아요.
 
 Claude가 한국어 블로그 글, 보고서, 메일, README를 새로 쓸 때도 이 스킬의 작성 지침을 따릅니다.
 
+## Doc Coach: 흐름과 구성 검수
+
+문장이 다 매끄러워도 순서가 엇나가거나 근거가 빠지면 읽는 사람은 설득되지 않습니다. PPT, PDF, 긴 보고서는 문장을 고친 뒤 이렇게 묻습니다.
+
+> 문장은 다 다듬었습니다. 전체 흐름이나 내용도 봐드릴까요? 발표용인가요, 배포용 보고서인가요?
+
+`doc-coach` 스킬은 따로 불러도 됩니다("발표 자료 흐름 봐줘", "장표 순서 괜찮아?").
+
+1. **결 확인:** 발표용(발표자가 설명) / 배포용(혼자 읽음) / 발표 후 배포. 누가 읽고 무엇을 판단하는지.
+2. **흐름 지도:** 장마다 메시지 한 줄과 역할. 제목만 이어 읽어도 논리가 이어지는지.
+3. **검수:** 근거·출처·기준일·단위, 빠진 단계, 시각화가 내용의 관계(비교, 추세, 구성비, 과정, 일정)에 맞는지. 발표용은 글 양과 발표자 노트, 배포용은 혼자 읽어도 이해되는지.
+4. **"이런 방식은 어떨까요?":** 순서, 제목, 시각화 대안을 전후로 보여 주고 고르게 합니다.
+5. **"이런 자료를 보여 주시면 더 잘 다듬어 드릴게요":** 흐름이 끊긴 곳에 필요한 자료를 구체적으로 요청합니다.
+6. **반영:** 고른 것만. 텍스트는 새 파일에 반영하고, 슬라이드 순서·추가·시각화 교체는 장별 변경 지시로 정리합니다.
+
+실무 원칙(결론 먼저, 한 장 한 메시지, 개조식, 3분할, 숫자 강조)은 출발점으로만 씁니다. 무조건 체언 종결, 매 장 3분할은 기본 규칙이 아닙니다. 적용과 조정 기준은 [principles.md](skills/doc-coach/references/principles.md).
+
 ## 진행 표시 (Claude Code)
 
 플러그인으로 설치하면 mod가 함께 켜져서, 고쳐 쓰는 동안 무엇이 진행 중인지 채팅 옆 패널과 상태줄에 보여 줍니다. 패널은 `/unslop-progress`로 다시 열 수 있습니다.
@@ -129,7 +146,8 @@ Claude가 한국어 블로그 글, 보고서, 메일, README를 새로 쓸 때�
 
 - **단계**는 스킬이 단계마다 부르는 `progress` 도구로 갱신됩니다.
 - **조사관과 검증관**은 자동으로 추적됩니다. 맡은 층위와 범위는 에이전트 이름(`unslop 조사관 문장 1-120줄`)에서, 발견 건수는 보고의 발견 목록 행에서, 검증관의 판정과 지적 건수는 검증 보고에서 읽습니다.
-- 스킬과 관계없는 에이전트는 표시하지 않습니다.
+- Doc Coach도 같은 패널에 결 확인부터 반영까지의 단계와 문제·제안·자료 요청 수를 보여 줍니다.
+- 이름이 `unslop`이나 `coach`로 시작하지 않는 에이전트는 표시하지 않습니다.
 
 ## 어떻게 동작하나
 
@@ -276,6 +294,9 @@ korean-unslop/
 ├── tests/progress.test.tsx  # mod 테스트 (claude plugin test .)
 ├── docs/
 │   └── evidence-review.md   # 근거 검토: 조사 범위, 연구, 넣지 않은 방식
+├── skills/doc-coach/
+│   ├── SKILL.md             # 흐름·구성 검수와 제안
+│   └── references/          # principles.md, review-checklist.md
 ├── skills/korean-unslop/
 │   ├── SKILL.md             # 절차와 원칙
 │   ├── references/

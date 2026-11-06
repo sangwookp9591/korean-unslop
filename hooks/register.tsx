@@ -1,11 +1,16 @@
 import { atom, read, update } from 'claude-code'
 import type { Register } from 'claude-code'
 
-import type { LayerCounts, Run, Worker } from '../types'
+import type { LayerCounts, Run, RunMode, Worker } from '../types'
 
 const PANE = 'korean-unslop-progress'
 const TOOL = 'mcp__korean-unslop__progress'
-const STEPS = ['대상 확인', '세기', '규모 판단', '층위별 조사', '모아서 고치기', '다시 세기', '최종 검증']
+const STEPS_BY_MODE: Record<RunMode, string[]> = {
+  unslop: ['대상 확인', '세기', '규모 판단', '층위별 조사', '모아서 고치기', '다시 세기', '최종 검증'],
+  coach: ['결 확인', '흐름 지도', '검수', '제안', '자료 요청', '반영'],
+}
+const LABEL: Record<RunMode, string> = { unslop: 'unslop', coach: 'Doc Coach' }
+const stepsOf = (r: Run) => STEPS_BY_MODE[r.mode ?? 'unslop']
 const LAYER_NAMES: Record<keyof LayerCounts, string> = { A: '화행', B: '구조', C: '문장', D: '낱말' }
 
 // 필드가 바뀌면 태그를 올린다: 예전 버전이 저장한 값을 initial로 읽는다.
@@ -15,6 +20,10 @@ const run = atom({ plugin: 'korean-unslop', key: 'run' } as const, null as Run |
 
 type ProgressInput = {
   step: number
+  mode?: RunMode
+  issues?: number
+  proposals?: number
+  requests?: number
   title?: string
   audience?: string
   tier?: string
@@ -26,7 +35,8 @@ type ProgressInput = {
 
 /** Agent 호출의 description에서 역할, 층위, 범위를 읽는다. "unslop 조사관 문장 1-120줄" */
 function parseWorker(description: string): Pick<Worker, 'role' | 'layer' | 'scope'> | undefined {
-  const d = description
+  const d = description.trim()
+  if (!/^(unslop|coach)\b/i.test(d)) return undefined
   const role = /검증/.test(d) ? 'verifier' : /흐름/.test(d) ? 'flow' : /조사/.test(d) ? 'investigator' : undefined
   if (!role) return undefined
   const has = (re: RegExp) => re.test(d)
@@ -52,6 +62,11 @@ function parseWorker(description: string): Pick<Worker, 'role' | 'layer' | 'scop
   return { role, layer, scope: m?.[1]?.replace(/\s+/g, '') ?? '전체' }
 }
 
+/** 흐름 지도 조각의 장 행 수: "| 3 | 제목 | ..." */
+function countRows(text: string): number {
+  return (text.match(/^\|\s*\d+\s*\|/gm) ?? []).length
+}
+
 /** 조사관 보고의 발견 목록 행 수: "| 3 | C3 | 11 | ..." */
 function countFindings(text: string): number {
   return (text.match(/^\|\s*\d+\s*\|\s*[A-E]\d{1,2}\s*\|/gm) ?? []).length
@@ -69,9 +84,13 @@ function sum(c?: LayerCounts): number {
 }
 
 function statusLine(r: Run): string {
-  const name = r.step > STEPS.length ? '완료' : `${r.step}/${STEPS.length} ${STEPS[r.step - 1]}`
+  const steps = stepsOf(r)
+  const name = r.step > steps.length ? '완료' : `${r.step}/${steps.length} ${steps[r.step - 1]}`
   const inv = r.workers.filter(w => w.role === 'investigator')
-  const parts = [`unslop · ${name}`]
+  const parts = [`${LABEL[r.mode ?? 'unslop']} · ${name}`]
+  if (r.issues !== undefined) parts.push(`문제 ${r.issues}건`)
+  if (r.proposals !== undefined) parts.push(`제안 ${r.proposals}개`)
+  if (r.requests !== undefined) parts.push(`자료 요청 ${r.requests}건`)
   if (r.tier) parts.push(`${r.tier} 규모`)
   if (inv.length) {
     const done = inv.filter(w => w.status !== 'running').length
@@ -89,16 +108,23 @@ export const register: Register = on => {
       name: 'progress',
       description:
         'korean-unslop 고쳐 쓰기의 진행 상황을 패널과 상태줄에 표시한다. korean-unslop 스킬로 글을 고칠 때 각 단계를 시작할 때마다 부른다. ' +
-        'step 1에서 title로 새 작업을 시작한다. 조사관과 검증관은 Agent description을 "unslop 조사관 <층위> <범위>", "unslop 검증관"으로 지으면 자동으로 추적된다.',
+        'doc-coach 스킬로 흐름을 검수할 때는 mode "coach"로 부른다. step 1에서 title로 새 작업을 시작한다. ' +
+        '조사관과 검증관은 Agent description을 "unslop 조사관 <층위> <범위>", "unslop 검증관", 흐름 지도 조각은 "coach 흐름 <범위>"로 지으면 자동으로 추적된다.',
       inputSchema: {
         type: 'object',
         properties: {
+          mode: { type: 'string', enum: ['unslop', 'coach'], description: '없으면 unslop' },
           step: {
             type: 'integer',
             minimum: 1,
             maximum: 8,
-            description: '1 대상 확인, 2 세기, 3 규모 판단, 4 층위별 조사, 5 모아서 고치기, 6 다시 세기, 7 최종 검증, 8 완료',
+            description:
+              'unslop: 1 대상 확인, 2 세기, 3 규모 판단, 4 층위별 조사, 5 모아서 고치기, 6 다시 세기, 7 최종 검증, 8 완료. ' +
+              'coach: 1 결 확인, 2 흐름 지도, 3 검수, 4 제안, 5 자료 요청, 6 반영, 7 완료',
           },
+          issues: { type: 'integer', description: 'coach: 검수에서 찾은 문제 수' },
+          proposals: { type: 'integer', description: 'coach: 제안한 구성안 수' },
+          requests: { type: 'integer', description: 'coach: 추가 자료 요청 수' },
           title: { type: 'string', description: '고치는 글의 짧은 이름. step 1에서 준다.' },
           audience: { type: 'string', description: '읽을 사람과 장르. 예: 팀장 보고' },
           tier: { type: 'string', enum: ['소', '중', '대', '특대'] },
@@ -135,13 +161,15 @@ export const register: Register = on => {
   on('tool.call', { tool: TOOL }, async ($, e) => {
     // 도구 인자는 tool.call 입력에 펼쳐져 들어온다
     const p = e as unknown as ProgressInput
-    const step = Math.min(8, Math.max(1, Math.round(p.step)))
+    const mode: RunMode = p.mode ?? 'unslop'
+    const last = STEPS_BY_MODE[mode].length + 1
+    const step = Math.min(last, Math.max(1, Math.round(p.step)))
     const isNew = step === 1 || p.title !== undefined
     let opened = false
     const cur = await update($, run, prev => {
       const base: Run =
-        !prev || prev.isDone || (isNew && step === 1)
-          ? { title: p.title ?? '글', step, workers: [], isDone: false }
+        !prev || prev.isDone || (isNew && step === 1) || (prev.mode ?? 'unslop') !== mode
+          ? { title: p.title ?? prev?.title ?? '글', mode, step, workers: [], isDone: false }
           : prev
       opened = base !== prev
       return {
@@ -154,19 +182,22 @@ export const register: Register = on => {
         counts: p.counts ?? base.counts,
         merged: p.merged ?? base.merged,
         note: p.note ?? base.note,
-        isDone: step === 8,
+        issues: p.issues ?? base.issues,
+        proposals: p.proposals ?? base.proposals,
+        requests: p.requests ?? base.requests,
+        isDone: step === last,
       }
     })
-    if (opened) void $.ui.open({ id: PANE, title: 'korean-unslop' })
+    if (opened) void $.ui.open({ id: PANE, title: LABEL[mode] })
     if (cur) {
       if (cur.isDone) {
         $.ui.status(undefined)
-        void $.ui.toast(`korean-unslop 완료: ${cur.title}`)
+        void $.ui.toast(`${LABEL[mode]} 완료: ${cur.title}`)
       } else {
         $.ui.status(statusLine(cur))
       }
     }
-    return { result: `기록함: ${step} ${STEPS[step - 1] ?? '완료'}` }
+    return { result: `기록함: ${LABEL[mode]} ${step} ${STEPS_BY_MODE[mode][step - 1] ?? '완료'}` }
   })
 
   on('tool.call', { tool: 'Agent' }, async ($, e, next) => {
@@ -230,9 +261,16 @@ export const register: Register = on => {
         </Box>
       )
     }
-    const inv = r.workers.filter(w => w.role !== 'verifier')
+    const steps = stepsOf(r)
+    const flow = r.workers.filter(w => w.role === 'flow')
+    const inv = r.workers.filter(w => w.role === 'investigator')
     const ver = r.workers.filter(w => w.role === 'verifier')
     const found = inv.reduce((n, w) => n + (w.findings ?? 0), 0)
+    const coach = [
+      r.issues !== undefined && `문제 ${r.issues}건`,
+      r.proposals !== undefined && `제안 ${r.proposals}개`,
+      r.requests !== undefined && `자료 요청 ${r.requests}건`,
+    ].filter(Boolean).join(' · ')
     const meta = [r.audience, r.tier && `${r.tier} 규모`, r.chars !== undefined && `${r.chars}자`].filter(Boolean).join(' · ')
     const mark = (w: Worker) => (w.status === 'running' ? '▶' : w.status === 'failed' ? '✗' : '✓')
     const state = (w: Worker) =>
@@ -242,14 +280,16 @@ export const register: Register = on => {
           ? '실패'
           : w.role === 'verifier'
             ? `${w.verdict ?? '완료'} · 지적 ${w.findings ?? 0}건`
-            : `발견 ${w.findings ?? 0}건`
+            : w.role === 'flow'
+              ? `지도 ${w.findings ?? 0}장`
+              : `발견 ${w.findings ?? 0}건`
 
     return (
       <Box flexDirection="column">
         <Text bold>{r.title}</Text>
         {meta && <Text dimColor>{meta}</Text>}
         <Text> </Text>
-        {STEPS.map((name, i) => {
+        {steps.map((name, i) => {
           const n = i + 1
           const done = r.isDone || n < r.step
           const now = !r.isDone && n === r.step
@@ -269,6 +309,23 @@ export const register: Register = on => {
                 .map(k => `${LAYER_NAMES[k]} ${r.counts?.[k] ?? 0}`)
                 .join(' · ')}
             </Text>
+          </Box>
+        )}
+        {coach && (
+          <Box flexDirection="column">
+            <Text> </Text>
+            <Text bold>{coach}</Text>
+          </Box>
+        )}
+        {flow.length > 0 && (
+          <Box flexDirection="column">
+            <Text> </Text>
+            <Text bold>흐름 지도 조각 {flow.filter(w => w.status !== 'running').length}/{flow.length}</Text>
+            {flow.map(w => (
+              <Text dimColor={w.status === 'done'}>
+                {mark(w)} {w.scope} · {state(w)}
+              </Text>
+            ))}
           </Box>
         )}
         {inv.length > 0 && (
@@ -302,6 +359,7 @@ export const register: Register = on => {
 }
 
 function finish(w: Worker, text: string): Worker {
+  if (w.role === 'flow') return { ...w, status: 'done', findings: countRows(text) }
   if (w.role === 'verifier') {
     const v = readVerdict(text)
     return { ...w, status: 'done', findings: v.findings, verdict: v.verdict }

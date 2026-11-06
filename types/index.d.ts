@@ -20,8 +20,12 @@ export type Worker = {
 
 export type LayerCounts = { A?: number; B?: number; C?: number; D?: number }
 
+export type RunMode = 'unslop' | 'coach'
+
 export type Run = {
   title: string
+  /** 없으면 unslop */
+  mode?: RunMode
   /** 1 대상 확인 … 7 최종 검증, 8 완료 */
   step: number
   tier?: string
@@ -32,6 +36,10 @@ export type Run = {
   /** 5단계에서 반영하기로 한 발견 수 */
   merged?: number
   note?: string
+  /** Doc Coach: 검수에서 찾은 문제, 제안 수, 추가 자료 요청 수 */
+  issues?: number
+  proposals?: number
+  requests?: number
   workers: Worker[]
   isDone: boolean
 }

@@ -104,3 +104,32 @@ test('진행 중인 작업이 없으면 안내만 보인다', async ($, on) => {
   expect((await ui.find({ type: 'Text' }))?.text).toBe('진행 중인 고쳐 쓰기가 없습니다.')
   await ui.unmount()
 })
+
+const MAP = `| 장 | 제목 | 메시지 | 역할 | 근거 |
+|---|---|---|---|---|
+| 1 | 2Q 결과 | 이탈률 12%→8% | 결론 | 대시보드 |
+| 2 | 시장 현황 | (없음) | 배경 | 리포트 |
+| 3 | 원인 | 가입 단계가 길다 | 원인 | VOC |
+`
+
+test('Doc Coach 모드는 자기 단계와 흐름 지도 조각, 문제·제안·요청 수를 보여 준다', async ($, on) => {
+  engine(on)
+  on('tool.call', (_, e) =>
+    e.tool === 'Agent'
+      ? { result: { agentId: 'f1', content: [{ type: 'text', text: MAP }] }, text: MAP }
+      : { result: {} },
+  )
+
+  await $.session.start({ cwd: '/', surface: 'terminal', isInteractive: true })
+  await $.tool.call({ tool: TOOL, mode: 'coach', step: 1, title: '2Q 보고 덱', audience: '배포용 보고서 · 임원' })
+  await $.tool.call({ tool: TOOL, mode: 'coach', step: 2 })
+  await $.tool.call({ tool: 'Agent', description: 'coach 흐름 1-15장', prompt: '...' })
+  await $.tool.call({ tool: TOOL, mode: 'coach', step: 4, issues: 5, proposals: 2, requests: 1 })
+
+  const ui = await $.ui.mount({ ...PANE, surface: 'terminal' })
+  expect((await ui.find({ type: 'Text', text: /4\. 제안/ }))?.text).toContain('▶ 4. 제안')
+  expect((await ui.find({ type: 'Text', text: /1-15장/ }))?.text).toBe('✓ 1-15장 · 지도 3장')
+  expect((await ui.find({ type: 'Text', text: /문제 5건/ }))?.text).toBe('문제 5건 · 제안 2개 · 자료 요청 1건')
+  expect(await ui.find({ type: 'Text', text: /층위별 조사/ })).toBeUndefined()
+  await ui.unmount()
+})
