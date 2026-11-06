@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="400" viewBox="0 0 1200 400">
+<style>.now{animation:br 1.8s ease-in-out infinite}@keyframes br{0%,100%{opacity:.28}50%{opacity:.65}}
+@media (prefers-reduced-motion: reduce){.now{animation:none;opacity:.45}}</style>
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FBFAFF"/><stop offset="1" stop-color="#F1EEFF"/></linearGradient></defs>
+<rect width="1200" height="400" rx="20" fill="url(#g)"/>
+<circle cx="64" cy="78" r="9" fill="#8B7CF6"/>
+<text x="88" y="92" font-family="'D2Coding','JetBrains Mono','Menlo','Consolas','Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',monospace" font-size="40" font-weight="700" fill="#1F1D2B">korean-unslop</text>
+<text x="64" y="134" font-family="'Pretendard','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic','Segoe UI',sans-serif" font-size="20" fill="#6B6880">한국어 글에서 AI 문체의 불쾌한 골짜기를 걷어냅니다</text>
+<rect x="64.0" y="162" width="63.7" height="22" rx="11.0" fill="#E4E1F2"/><rect x="64.0" y="162" width="63.7" height="22" rx="11.0" fill="#8B7CF6"/><rect x="131.7" y="162" width="63.7" height="22" rx="11.0" fill="#E4E1F2"/><rect x="131.7" y="162" width="63.7" height="22" rx="11.0" fill="#8B7CF6"/><rect x="199.4" y="162" width="63.7" height="22" rx="11.0" fill="#E4E1F2"/><rect x="199.4" y="162" width="63.7" height="22" rx="11.0" fill="#8B7CF6"/><rect x="267.1" y="162" width="63.7" height="22" rx="11.0" fill="#E4E1F2"/><rect class="now" x="267.1" y="162" width="63.7" height="22" rx="11.0" fill="#8B7CF6"/><rect x="267.1" y="162" width="31.9" height="22" rx="11.0" fill="#8B7CF6"/><rect x="334.9" y="162" width="63.7" height="22" rx="11.0" fill="#E4E1F2"/><rect x="402.6" y="162" width="63.7" height="22" rx="11.0" fill="#E4E1F2"/><rect x="470.3" y="162" width="63.7" height="22" rx="11.0" fill="#E4E1F2"/><rect x="246.0" y="162" width="110.0" height="22" rx="11.0" fill="#8B7CF6"/><text x="301.0" y="177.3" text-anchor="middle" font-family="'Pretendard','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic','Segoe UI',sans-serif" font-size="12" font-weight="700" fill="#fff">4/7 층위별 조사</text>
+<text x="548" y="179" font-family="'Pretendard','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic','Segoe UI',sans-serif" font-size="15" fill="#6B6880">50%</text>
+<rect x="64" y="206" width="48" height="26" rx="13" fill="#E0654A" opacity="0.14"/>
+<text x="88" y="224" text-anchor="middle" font-family="'Pretendard','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic','Segoe UI',sans-serif" font-size="14" font-weight="600" fill="#E0654A">화행</text>
+<rect x="119.76" y="206" width="48" height="26" rx="13" fill="#D99A2B" opacity="0.14"/>
+<text x="144" y="224" text-anchor="middle" font-family="'Pretendard','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic','Segoe UI',sans-serif" font-size="14" font-weight="600" fill="#D99A2B">구조</text>
+<rect x="175.52" y="206" width="48" height="26" rx="13" fill="#2A9D8F" opacity="0.14"/>
+<text x="199" y="224" text-anchor="middle" font-family="'Pretendard','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic','Segoe UI',sans-serif" font-size="14" font-weight="600" fill="#2A9D8F">문장</text>
+<rect x="231.28000000000003" y="206" width="48" height="26" rx="13" fill="#4A90D9" opacity="0.14"/>
+<text x="255" y="224" text-anchor="middle" font-family="'Pretendard','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic','Segoe UI',sans-serif" font-size="14" font-weight="600" fill="#4A90D9">낱말</text>
+<rect x="640" y="40" width="512" height="320" rx="16" fill="#FFFFFF" stroke="#E6E3F0"/>
+<text x="664" y="76" font-family="'Pretendard','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic','Segoe UI',sans-serif" font-size="14" font-weight="700" fill="#6B6880">전  →  후</text>
+<text x="664" y="112" font-family="'Pretendard','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic','Segoe UI',sans-serif" font-size="15" fill="#C2412D">다만, 모든 조직에 적합하다고 단정하기는 어렵습니다.</text>
+<line x1="664" y1="107" x2="1028" y2="107" stroke="#C2412D" stroke-width="1.4" opacity="0.8"/>
+<text x="664" y="136" font-family="'Pretendard','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic','Segoe UI',sans-serif" font-size="15" font-weight="600" fill="#1E7F56">→ (삭제)</text>
+<text x="1128" y="136" text-anchor="end" font-family="'D2Coding','JetBrains Mono','Menlo','Consolas','Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',monospace" font-size="11" fill="#6B6880">A1 결론 흐리는 단서</text>
+<text x="664" y="178" font-family="'Pretendard','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic','Segoe UI',sans-serif" font-size="15" fill="#C2412D">원격 근무는 단순히 장소를 바꾸는 것을 넘어</text>
+<line x1="664" y1="173" x2="965" y2="173" stroke="#C2412D" stroke-width="1.4" opacity="0.8"/>
+<text x="664" y="202" font-family="'Pretendard','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic','Segoe UI',sans-serif" font-size="15" font-weight="600" fill="#1E7F56">→ 원격 근무를 하면 일하는 방식이 바뀝니다</text>
+<text x="1128" y="202" text-anchor="end" font-family="'D2Coding','JetBrains Mono','Menlo','Consolas','Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',monospace" font-size="11" fill="#6B6880">A2 묻지 않은 대비</text>
+<text x="664" y="244" font-family="'Pretendard','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic','Segoe UI',sans-serif" font-size="15" fill="#C2412D">이를 통해 출퇴근 시간을 절약할 수 있습니다.</text>
+<line x1="664" y1="239" x2="973" y2="239" stroke="#C2412D" stroke-width="1.4" opacity="0.8"/>
+<text x="664" y="268" font-family="'Pretendard','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic','Segoe UI',sans-serif" font-size="15" font-weight="600" fill="#1E7F56">→ 출퇴근 시간이 줄어듭니다.</text>
+<text x="1128" y="268" text-anchor="end" font-family="'D2Coding','JetBrains Mono','Menlo','Consolas','Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',monospace" font-size="11" fill="#6B6880">C3 번역투</text>
+<text x="664" y="310" font-family="'Pretendard','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic','Segoe UI',sans-serif" font-size="15" fill="#C2412D">이에 대한 검토를 진행하였습니다.</text>
+<line x1="664" y1="305" x2="892" y2="305" stroke="#C2412D" stroke-width="1.4" opacity="0.8"/>
+<text x="664" y="334" font-family="'Pretendard','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic','Segoe UI',sans-serif" font-size="15" font-weight="600" fill="#1E7F56">→ 이 내용을 검토했습니다.</text>
+<text x="1128" y="334" text-anchor="end" font-family="'D2Coding','JetBrains Mono','Menlo','Consolas','Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',monospace" font-size="11" fill="#6B6880">C6 명사화</text>
+<rect x="64" y="256" width="6" height="22" rx="3" fill="#8B7CF6"/>
+<text x="82" y="272" font-family="'D2Coding','JetBrains Mono','Menlo','Consolas','Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',monospace" font-size="16" font-weight="700" fill="#1F1D2B">korean-unslop</text>
+<text x="219" y="272" font-family="'Pretendard','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic','Segoe UI',sans-serif" font-size="15" fill="#6B6880">문장을 세고 고친다</text>
+<rect x="64" y="292" width="6" height="22" rx="3" fill="#2A9D8F"/>
+<text x="82" y="308" font-family="'D2Coding','JetBrains Mono','Menlo','Consolas','Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',monospace" font-size="16" font-weight="700" fill="#1F1D2B">doc-coach</text>
+<text x="181" y="308" font-family="'Pretendard','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic','Segoe UI',sans-serif" font-size="15" fill="#6B6880">흐름과 구성을 검수한다</text>
+<rect x="64" y="328" width="6" height="22" rx="3" fill="#4CAF84"/>
+<text x="82" y="344" font-family="'D2Coding','JetBrains Mono','Menlo','Consolas','Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',monospace" font-size="16" font-weight="700" fill="#1F1D2B">진행 표시 mod</text>
+<text x="203" y="344" font-family="'Pretendard','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic','Segoe UI',sans-serif" font-size="15" fill="#6B6880">단계와 발견 건수를 보여 준다</text>
+</svg>

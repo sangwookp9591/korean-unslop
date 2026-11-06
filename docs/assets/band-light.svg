@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="64" viewBox="0 0 1000 64">
+<style>.now{animation:br 1.8s ease-in-out infinite}@keyframes br{0%,100%{opacity:.28}50%{opacity:.65}}
+@media (prefers-reduced-motion: reduce){.now{animation:none;opacity:.45}}</style>
+<rect width="1000" height="64" rx="14" fill="#FFFFFF" stroke="#E6E3F0"/>
+<circle cx="26" cy="32.0" r="5" fill="#8B7CF6"/>
+<text x="40" y="37.0" font-family="'Pretendard','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic','Segoe UI',sans-serif" font-size="15" font-weight="700" fill="#1F1D2B">원격 근무 보고</text>
+<rect x="162.2" y="22.0" width="76.6" height="20" rx="10.0" fill="#E4E1F2"/><rect x="162.2" y="22.0" width="76.6" height="20" rx="10.0" fill="#8B7CF6"/><rect x="242.8" y="22.0" width="76.6" height="20" rx="10.0" fill="#E4E1F2"/><rect x="242.8" y="22.0" width="76.6" height="20" rx="10.0" fill="#8B7CF6"/><rect x="323.3" y="22.0" width="76.6" height="20" rx="10.0" fill="#E4E1F2"/><rect x="323.3" y="22.0" width="76.6" height="20" rx="10.0" fill="#8B7CF6"/><rect x="403.9" y="22.0" width="76.6" height="20" rx="10.0" fill="#E4E1F2"/><rect class="now" x="403.9" y="22.0" width="76.6" height="20" rx="10.0" fill="#8B7CF6"/><rect x="403.9" y="22.0" width="38.3" height="20" rx="10.0" fill="#8B7CF6"/><rect x="484.5" y="22.0" width="76.6" height="20" rx="10.0" fill="#E4E1F2"/><rect x="565.1" y="22.0" width="76.6" height="20" rx="10.0" fill="#E4E1F2"/><rect x="645.6" y="22.0" width="76.6" height="20" rx="10.0" fill="#E4E1F2"/><rect x="389.2" y="22.0" width="110.0" height="20" rx="10.0" fill="#8B7CF6"/><text x="444.2" y="36.3" text-anchor="middle" font-family="'Pretendard','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic','Segoe UI',sans-serif" font-size="12" font-weight="700" fill="#fff">4/7 층위별 조사</text>
+<text x="738" y="37.0" font-family="'Pretendard','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic','Segoe UI',sans-serif" font-size="14"  fill="#6B6880">50%</text>
+<text x="785" y="37.0" font-family="'Pretendard','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic','Segoe UI',sans-serif" font-size="14" font-weight="700" fill="#8B7CF6">발견 9</text>
+<text x="849" y="37.0" font-family="'Pretendard','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic','Segoe UI',sans-serif" font-size="14" font-weight="700" fill="#1F1D2B">×2</text>
+<text x="887" y="37.0" font-family="'Pretendard','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic','Segoe UI',sans-serif" font-size="14"  fill="#6B6880">✕</text>
+</svg>
