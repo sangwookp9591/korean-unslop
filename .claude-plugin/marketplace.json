@@ -1,0 +1,16 @@
+{
+  "name": "korean-unslop",
+  "owner": { "name": "sangwookp9591", "email": "sangwookp9591@gmail.com" },
+  "metadata": {
+    "description": "한국어 AI 문체 교정 스킬 마켓플레이스"
+  },
+  "plugins": [
+    {
+      "name": "korean-unslop",
+      "source": "./",
+      "description": "한국어 글에서 AI 문체의 불쾌한 골짜기를 걷어내는 스킬. 보고서·메일·메신저·블로그·기술 문서·자소서·PPT·PDF 지원.",
+      "version": "0.1.0",
+      "category": "productivity"
+    }
+  ]
+}
