@@ -179,9 +179,33 @@ def per_k(n: int, chars: int) -> float:
     return round(n * 1000 / chars, 1) if chars else 0.0
 
 
+TIERS = [
+    # (이름, 글자 수 상한, 인원 제안)
+    ("소", 1500, "혼자(본 세션). 층위 순서대로 보고 자체 검증"),
+    ("중", 5000, "조사관 2명(화행+구조·내용 / 문장+낱말) + 검증관 1명"),
+    ("대", 15000, "조사관 4명(화행, 구조·내용, 문장, 낱말·분야) + 검증관 1명"),
+    ("특대", None, "흐름 지도 먼저 → 화행·구조 조사관 2명(전체) + 문장·낱말 조사관 구간별 n명 → 검증관"),
+]
+
+
+def plan(rep: Report) -> dict:
+    """글자 수로 규모를 정하고, 화행·구조 표지 밀도가 높으면 한 단계 올린다.
+    장르 혼합, 대외 공개·제출용 같은 조건은 스크립트가 모르므로 SKILL.md 기준으로 본 세션이 조정한다."""
+    idx = next(i for i, (_n, cap, _p) in enumerate(TIERS) if cap is None or rep.chars <= cap)
+    ab = sum(len(rep.hits[p]) for p in rep.hits if p[0] in "AB")
+    density = ab * 1000 / rep.chars if rep.chars else 0
+    reasons = [f"{rep.chars}자"]
+    if density >= 6 and idx < len(TIERS) - 1 and rep.chars > 800:
+        idx += 1
+        reasons.append(f"화행·구조 표지 1000자당 {density:.1f}로 높아 한 단계 올림")
+    name, _cap, people = TIERS[idx]
+    return {"tier": name, "suggestion": people, "reasons": reasons}
+
+
 def to_dict(rep: Report) -> dict:
     return {
         "chars": rep.chars,
+        "plan": plan(rep),
         "sentences": rep.sentences,
         "sentence_length_mean": round(rep.sent_len_mean, 1),
         "sentence_length_cv": round(rep.sent_len_cv, 2),
@@ -213,6 +237,8 @@ def render(rep: Report, examples: int = 3) -> str:
         ratio = rep.md_lines / rep.total_lines
         md_note = " ← 서식 비중 높음" if ratio >= 0.4 and rep.total_lines >= 6 else ""
         out.append(f"- 제목·불릿·번호 줄 비율 {ratio:.0%}{md_note}")
+    pl = plan(rep)
+    out.append(f"- 규모 제안: {pl['tier']} ({', '.join(pl['reasons'])}) → {pl['suggestion']}")
     out.append("")
     out.append("## 표지별 횟수 (1000자당)\n")
     out.append("| id | 표지 | 횟수 | 1000자당 | 줄 |")
