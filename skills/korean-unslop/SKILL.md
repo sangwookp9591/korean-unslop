@@ -87,6 +87,7 @@ description: 한국어 글에서 AI 문체의 '불쾌한 골짜기'를 걷어내
 
 ### 파일이 PPT나 PDF일 때
 
+- **기본 스킬이 있으면 먼저 쓴다.** PPTX는 Anthropic `pptx` 스킬의 `slide_text.py`가 표와 차트 데이터까지 뽑고, 고친 뒤에는 그 스킬의 `validate.py --original <원본>`으로 PowerPoint가 거부할 부분이 없는지 확인한다. 렌더링 도구(LibreOffice, Poppler)가 있으면 고친 장을 렌더링해 글이 길어져 넘친 곳을 본다. PDF는 `pdf-viewer` 플러그인으로 고친 문장 위치를 페이지 위에 주석으로 보여 줄 수 있다. 각 스킬의 SKILL.md를 읽고 그 지시를 따른다.
 - **PPT(.pptx):** `scripts/office_text.py`로 문단을 뽑고, 고친 문단만 JSON으로 만들어 새 파일에 다시 넣는다. 서식, 이미지, 손대지 않은 슬라이드는 그대로 남는다. 표준 라이브러리만 쓰므로 설치가 필요 없다.
   ```bash
   python3 <스킬>/scripts/office_text.py extract deck.pptx --json deck.paras.json --md deck.txt   # --notes로 발표자 노트 포함

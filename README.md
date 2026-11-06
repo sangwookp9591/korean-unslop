@@ -8,7 +8,7 @@
 korean-unslop은 한국 독자가 실제로 AI 티라고 지적한 표지를 세고, 글의 자리와 읽을 사람에 맞게 고쳐 씁니다.
 
 [![Claude Code Plugin](https://img.shields.io/badge/Claude_Code-plugin-D97757)](#설치)
-[![Version](https://img.shields.io/badge/version-0.6.0-blue)](.claude-plugin/plugin.json)
+[![Version](https://img.shields.io/badge/version-0.7.0-blue)](.claude-plugin/plugin.json)
 [![Python](https://img.shields.io/badge/scripts-python3_stdlib_only-3776AB)](skills/korean-unslop/scripts)
 [![Formats](https://img.shields.io/badge/지원-텍스트·PPTX·PDF-555)](#사용법)
 
@@ -114,7 +114,24 @@ Claude가 한국어 블로그 글, 보고서, 메일, README를 새로 쓸 때�
 3. **검수:** 근거·출처·기준일·단위, 빠진 단계, 시각화가 내용의 관계(비교, 추세, 구성비, 과정, 일정)에 맞는지. 발표용은 글 양과 발표자 노트, 배포용은 혼자 읽어도 이해되는지.
 4. **"이런 방식은 어떨까요?":** 순서, 제목, 시각화 대안을 전후로 보여 주고 고르게 합니다.
 5. **"이런 자료를 보여 주시면 더 잘 다듬어 드릴게요":** 흐름이 끊긴 곳에 필요한 자료를 구체적으로 요청합니다.
-6. **반영:** 고른 것만. 텍스트는 새 파일에 반영하고, 슬라이드 순서·추가·시각화 교체는 장별 변경 지시로 정리합니다.
+6. **반영:** 고른 것만. 문구는 새 파일에 반영하고, 슬라이드 순서 변경·추가·삭제는 `pptx` 스킬로 반영한 뒤 호환성을 검증합니다. `pptx` 스킬이 없으면 장별 변경 지시로 정리합니다.
+
+### 함께 쓰는 기본 스킬
+
+파일을 열고 보이고 고치는 일은 기본 스킬에 맡깁니다. 없으면 텍스트만으로 진행합니다.
+
+| 기본 스킬 | 쓰는 곳 |
+|---|---|
+| Anthropic `pptx` | 슬라이드 텍스트·표·차트 데이터·노트 추출, 썸네일 그리드, 렌더링해서 잘림·겹침 확인, 슬라이드 복제·순서 변경·삭제, PowerPoint 호환성 검증 |
+| `pdf-viewer` 플러그인 | 검수에서 찾은 문제를 PDF 페이지 위에 강조와 주석으로 표시해 함께 넘겨 보기. PPTX는 렌더링한 PDF로 |
+| Anthropic `pdf` | PDF 표 추출, 페이지 분리·병합 |
+
+PPTX 렌더링에는 LibreOffice와 Poppler가 필요합니다.
+
+```bash
+sudo apt install -y libreoffice-impress poppler-utils      # Ubuntu, WSL
+brew install --cask libreoffice && brew install poppler    # macOS
+```
 
 실무 원칙(결론 먼저, 한 장 한 메시지, 개조식, 3분할, 숫자 강조)은 출발점으로만 씁니다. 무조건 체언 종결, 매 장 3분할은 기본 규칙이 아닙니다. 적용과 조정 기준은 [principles.md](skills/doc-coach/references/principles.md).
 
