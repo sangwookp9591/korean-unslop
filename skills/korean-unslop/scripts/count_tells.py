@@ -31,7 +31,7 @@ PATTERNS: list[tuple[str, str, str, str]] = [
     ("A2", "묻지 않은 부정·허수아비 대비", r"(단순히|단순한)[^.!?\n]{0,30}(아니라|넘어|그치지)|[가-힣]+(이|가) 아니라 [가-힣]+|라기보다(는)?|라는 뜻은 아닙니다|것은 아닙니다", "'A가 아니라 B', '단순히 ~를 넘어'"),
     ("A3", "아첨·과잉 칭찬", r"핵심을 (정확히 )?찔|정곡을 찌|날카로운 (통찰|질문|지적|관찰)|정말 좋은 질문|정확히 지적|훌륭한 (질문|통찰)", "'너 정말 핵심을 찔렀어'"),
     ("A4", "후속 제안·맺음 인사", r"원하시면|원한다면|필요하시다면|해\s?드릴까요|알려\s?드릴까요|도움이 되(셨|었)(길|기를)|댓글로 (남겨|공유|알려)", "'원하시면 ~해드릴까요?', '도움이 되셨길'"),
-    ("A5", "예고·메타 발화", r"(에 대해|을|를) (알아|살펴)보(겠|도록 하겠)습니다|결론부터 말(하|씀드리)(면|자면)|정리하면 다음과 같|요약하면 다음과 같|설명(해\s?)?드리겠습니다|말씀드리겠습니다|살펴보았습니다|알아보았습니다|더 흥미로워(집|지)|흥미로운 (점|사실)은|비교하면 다음과 같|다음과 같습니다", "'~에 대해 알아보겠습니다', '결론부터 말하면'"),
+    ("A5", "예고·메타 발화", r"(에 대해|을|를) (알아|살펴)보(겠|도록 하겠)습니다|결론부터 말(하|씀드리)(면|자면)|정리하면 다음과 같|요약하면 다음과 같|설명(해\s?)?드리겠습니다|말씀드리겠습니다|살펴보았습니다|알아보았습니다|더 흥미로워(집|지)|흥미로운 (점|사실)은|비교하면 다음과 같|다음과 같습니다|주목할 만한 점은|눈여겨볼 부분은|중요한 포인트는|살펴보자면", "'~에 대해 알아보겠습니다', '결론부터 말하면'"),
     ("A6", "작위적 공손", r"하도록 하겠습니다|가져보(도록 하|겠)|소중한 (의견|시간|말씀)|감사드립니다!|진심으로 (감사|공감)|충분히 이해(합니다|해요)", "'~하도록 하겠습니다', '소중한 의견 감사드립니다!'"),
     # B. 구조
     ("B1", "거창한 마무리·상투 결론", r"시사하는 바가|의미가 (있었|깊었)습니다|성장(했|하였)습니다|기여하겠습니다|이바지하겠습니다|더 나은 (미래|내일)|함께 성장하는|순간이었다|역설이었다|의 증명이었다|균형이었다|발판을 마련", "문단·글 끝의 '시사하는 바가 큽니다', '~의 순간이었다'"),
@@ -53,6 +53,7 @@ PATTERNS: list[tuple[str, str, str, str]] = [
     ("D4", "볼드 강조", r"\*\*[^*\n]+\*\*", "**볼드** 남발"),
     ("D5", "장식 이모지", r"[\U0001F300-\U0001FAFF☀-➿⭐✅❌]", "✅📌💡 같은 장식"),
     ("D6", "작은따옴표·큰따옴표 강조", r"[‘'][^‘’'\n]{1,15}[’']|[“\"][^“”\"\n]{1,10}[”\"]", "짧은 낱말에 붙은 따옴표 (인용이 아닌 강조)"),
+    ("D7", "추상 부사·수식어 (후보)", r"궁극적으로|본질적으로|근본적으로|필연적으로|잠재적인|전반적인|성공적으로|효과적으로|적극적으로", "추상 수식어 후보. 필요한 범위·가능성·성과를 나타내면 남기고, 반복과 구체적 근거를 읽고 판단"),
     ("D8", "분야에서 안 쓰는 동사·용어 (후보)", r"셌(습니다|다|고)|걷어(냈|내|내고)|흘려보(냈|내)|(구조|모듈|계층)(로|으로) 짓|끌고 (갔|가)|(상태|경로)(로|가) 닫혔|갈랐|뭉개|오너십을 (가지|가졌|갖)|정직성|장치(를|도|가|로)|본론|간극을|흐름을 펴|끌어내리|드나드|계측 축", "'burn-in으로 셌습니다', '걷어냈습니다', '장치를 넣었습니다', 모델 비교의 '정직성'. 후보일 뿐이니 그 분야 동료가 쓰는 말인지 읽고 판단"),
 ]
 
@@ -75,6 +76,7 @@ class Report:
     sentences: int = 0
     hits: dict[str, list[Hit]] = field(default_factory=dict)
     ending_runs: list[tuple[str, int, int]] = field(default_factory=list)  # (어미, 길이, 시작 줄)
+    ending_key_runs: list[tuple[str, int, int]] = field(default_factory=list)  # (종결형, 길이, 시작 줄)
     ending_top: list[tuple[str, int]] = field(default_factory=list)
     sent_len_mean: float = 0.0
     sent_len_cv: float = 0.0
@@ -86,11 +88,14 @@ class Report:
 
 
 def ending_key(sentence: str) -> str:
-    """문장 끝 어미를 대략 뽑는다. 형태소 분석 없이 마지막 어절의 끝 3글자."""
+    """자주 쓰는 종결형을 구분하고, 나머지는 마지막 어절의 끝 3글자를 쓴다."""
     s = re.sub(r"[\s.!?…~\"'”’)\]]+$", "", sentence)
     if not s:
         return ""
     last = s.split()[-1]
+    for suffix in ("하였습니다", "했습니다", "있습니다", "없습니다", "됩니다", "입니다"):
+        if last.endswith(suffix):
+            return suffix
     return last[-3:] if len(last) >= 3 else last
 
 
@@ -165,6 +170,16 @@ def analyze(text: str) -> Report:
             run_cls, run_len, run_start = c, 1, ln
     rep.ending_top = [(k, n) for k, n in Counter(k for _, k in keys if k).most_common(5) if n >= 3]
 
+    # 높임 계열은 같아도 종결형이 섞이면 동일 종결형 반복으로 세지 않는다.
+    run_key, run_len, run_start = None, 0, 0
+    for ln, key in keys + [(0, None)]:
+        if key == run_key and key:
+            run_len += 1
+        else:
+            if run_key and ending_class(run_key) != "기타" and run_len >= 4:
+                rep.ending_key_runs.append((run_key, run_len, run_start))
+            run_key, run_len, run_start = key, 1, ln
+
     for ln, s in sents:
         if s.count(",") >= 3:
             rep.comma_heavy.append(Hit("comma", ln, s))
@@ -217,6 +232,7 @@ def to_dict(rep: Report) -> dict:
             for pid, name, _rx, _d in PATTERNS
         },
         "ending_runs": [{"class": c, "length": n, "start_line": s} for c, n, s in rep.ending_runs],
+        "ending_key_runs": [{"ending": k, "length": n, "start_line": s} for k, n, s in rep.ending_key_runs],
         "ending_top": [{"ending": k, "count": n} for k, n in rep.ending_top],
         "comma_heavy_lines": [h.line for h in rep.comma_heavy],
         "go_chain_lines": [h.line for h in rep.go_chains],
@@ -253,10 +269,12 @@ def render(rep: Report, examples: int = 3) -> str:
         out.append(f"| {pid} | {name} | {len(hits)} | {per_k(len(hits), rep.chars)} | {line_s} |")
     out.append("")
 
-    if rep.ending_runs or rep.ending_top:
+    if rep.ending_runs or rep.ending_key_runs or rep.ending_top:
         out.append("## 어미 반복\n")
         for c, n, s in rep.ending_runs:
             out.append(f"- {s}번째 줄부터 {c} 문장이 {n}번 연속")
+        for k, n, s in rep.ending_key_runs:
+            out.append(f"- {s}번째 줄부터 같은 종결형 '{k}' {n}번 연속 (문맥을 보고 판단)")
         if rep.ending_top:
             out.append("- 자주 나온 문장 끝: " + ", ".join(f"'{k}' {n}회" for k, n in rep.ending_top))
         out.append("")
@@ -301,6 +319,7 @@ def render_compare(a: Report, b: Report) -> str:
     out.append(f"| - | 글자 수 | {a.chars} | {b.chars} |")
     out.append(f"| - | 문장 길이 변동계수 | {a.sent_len_cv:.2f} | {b.sent_len_cv:.2f} |")
     out.append(f"| - | 같은 어미 5연속 이상 | {len(a.ending_runs)} | {len(b.ending_runs)} |")
+    out.append(f"| - | 같은 종결형 4연속 이상 | {len(a.ending_key_runs)} | {len(b.ending_key_runs)} |")
     out.append(f"| - | 쉼표 3개 이상 문장 | {len(a.comma_heavy)} | {len(b.comma_heavy)} |")
     return "\n".join(out)
 
